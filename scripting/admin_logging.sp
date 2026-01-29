@@ -5,7 +5,7 @@ public Plugin:myinfo =
 	name = "Admin loggin",
 	author = "vIr-Dan",
 	description = "Logs to admin_name_STEAMID",
-	version = "1.1.0",
+	version = "1.1.1",
 	url = "http://dansbasement.us"
 };
 
@@ -21,14 +21,18 @@ public Action:OnLogAction(Handle:source,
 						   
 {
 	// Get the admin ID
-	decl AdminId:adminID;	
-	adminID = GetUserAdmin(client);
+	decl AdminId:adminID;
 	
-	/* If there is no client or they're not an admin, we don't care. */
-	if (client < 1 ||  adminID == INVALID_ADMIN_ID)
-	{
+	// Get the admin id safely
+	if (client > 0)	
+		adminID = GetUserAdmin(client);
+	else
+		adminID = INVALID_ADMIN_ID;
+	
+	// If this user has no admin and is NOT the server
+	// let the core log this
+	if (adminID == INVALID_ADMIN_ID && client > 0)
 		return Plugin_Continue;
-	}
 	
 	// Holds the log tag
 	decl String:logtag[64];
@@ -47,14 +51,24 @@ public Action:OnLogAction(Handle:source,
 	 * it with '-' to keep the file names readable.
 	 */
 	decl String:steamid[32];
-	GetClientAuthString(client, steamid, sizeof(steamid));
-	ReplaceString(steamid, sizeof(steamid), ":", "-");
+	
+	if (client > 0)
+	{
+		GetClientAuthString(client, steamid, sizeof(steamid));
+		ReplaceString(steamid, sizeof(steamid), ":", "-");
+	}
+	else
+		steamid = "STEAM_ID_SERVER";
 	
 	// Get the admin name and store it in the adminName string
 	decl String:adminName[64];
-	GetAdminUsername(adminID, adminName, sizeof(adminName));
 	
-	/* Prefix our file with the word 'admin_' */
+	if (client > 0)
+		GetAdminUsername(adminID, adminName, sizeof(adminName));
+	else
+		adminName = "server";
+	
+	/* Prefix our file with the word 'admin_adminname' */
 	decl String:file[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, file, sizeof(file), "logs/admin_%s_%s.log", adminName, steamid);
 	
