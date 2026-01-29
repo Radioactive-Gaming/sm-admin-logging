@@ -4,8 +4,8 @@ public Plugin:myinfo =
 {
 	name = "Admin loggin",
 	author = "vIr-Dan",
-	description = "Logs to admin_STEAMID",
-	version = "1.0",
+	description = "Logs to admin_name_STEAMID",
+	version = "1.1.0",
 	url = "http://dansbasement.us"
 };
 
@@ -18,13 +18,19 @@ public Action:OnLogAction(Handle:source,
 						   client,
 						   target,
 						   const String:message[])
+						   
 {
+	// Get the admin ID
+	decl AdminId:adminID;	
+	adminID = GetUserAdmin(client);
+	
 	/* If there is no client or they're not an admin, we don't care. */
-	if (client < 1 || GetUserAdmin(client) == INVALID_ADMIN_ID)
+	if (client < 1 ||  adminID == INVALID_ADMIN_ID)
 	{
 		return Plugin_Continue;
 	}
 	
+	// Holds the log tag
 	decl String:logtag[64];
 	
 	/* At the moment extensions can't be passed through here yet, 
@@ -44,9 +50,13 @@ public Action:OnLogAction(Handle:source,
 	GetClientAuthString(client, steamid, sizeof(steamid));
 	ReplaceString(steamid, sizeof(steamid), ":", "-");
 	
+	// Get the admin name and store it in the adminName string
+	decl String:adminName[64];
+	GetAdminUsername(adminID, adminName, sizeof(adminName));
+	
 	/* Prefix our file with the word 'admin_' */
 	decl String:file[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, file, sizeof(file), "logs/admin_%s.log", steamid);
+	BuildPath(Path_SM, file, sizeof(file), "logs/admin_%s_%s.log", adminName, steamid);
 	
 	/* Finally, write to the log file with the log tag we deduced. */
 	LogToFileEx(file, "[%s] %s", logtag, message);
