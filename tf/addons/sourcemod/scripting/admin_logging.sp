@@ -16,8 +16,8 @@ public Plugin myinfo =
 };
 
 public void OnPluginStart(){
-        CreateConVar("sm_al_version", PLUGIN_VERSION, "The version of 'admin logging' running.", FCVAR_SPONLY|FCVAR_REPLICATE>
-}       
+        CreateConVar("sm_al_version", PLUGIN_VERSION, "The version of 'admin logging' running.", FCVAR_SPONLY|FCVAR_REPLICATED);
+}
 
 public Action OnLogAction(Handle source, Identity ident, int client, int target, const char[] message){
         /* If there is no client or they're not an admin, we don't care. */
