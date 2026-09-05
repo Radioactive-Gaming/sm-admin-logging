@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.2] 2026-09-05
+
+### Changed
+
+- File name to match new automation.
+
 ## [1.1.1] 2026-01-29
 
 ### Changed
